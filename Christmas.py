@@ -3,8 +3,9 @@ import random
 import colorsys
 import numpy as np
 from Player import Player
+from pygame import mixer
 import os
-os.chdir(r"xmas")
+os.chdir(r"Christmas-Padoru")
 # display set up
 pygame.init()
 font = pygame.font.Font("ELEPHNTI.TTF",36)
@@ -22,6 +23,11 @@ star_img = pygame.transform.scale(star_img, (120, 120))
 dust_img = pygame.image.load('dust.png').convert_alpha()
 dust_img = pygame.transform.scale(dust_img, (30, 30))
 
+# load & play Sound
+mixer.music.load("Padoru_Song.wav")
+mixer.music.set_volume(0)
+mixer.music.play(-1)
+i=0
 # player object
 player = Player()
 
@@ -46,7 +52,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
 text = ["HASHIRE SORI YO", "KAZE NO YOU NI", "TSUKIMIHARA WO","PADORU PADORU"]
-text_speed= 30
+text_speed= 180
 
 # Set color to image
 def set_color(img, color):
@@ -71,7 +77,7 @@ def get_key(event):
 
 while True:
     player.move(move_speed)
-    count= count+1 if count < text_speed*len(text)-1 else 0
+    count= count+1 if count < 380 else 0
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -94,6 +100,15 @@ while True:
             elif event.key == pygame.K_SPACE:
                 # Start to jump by setting isJump to True.
                 player.isJump = True
+                jump_sound = mixer.Sound("jump.wav")
+                jump_sound.set_volume(.2)
+                mixer.Sound.play(jump_sound)
+            elif event.key == pygame.K_s:
+                # Get sound
+                mixer.music.set_volume(.05)
+            elif event.key == pygame.K_d:
+                # mute sound
+                mixer.music.set_volume(0)
 
         elif event.type == pygame.KEYUP:
             player.stop()
@@ -106,7 +121,9 @@ while True:
     set_color(star_img, pygame.Color(round(r*255), round(g*255), round(b*255)))
     # rect = image.get_rect(center=(x_pos, y_pos))  # suppose to be the position of start point
     
-    text_display=font.render(text[count//text_speed],True,"red")
+    if count in [95,180,275,380]:
+        i+=1 
+    text_display=font.render(text[i%4],True,"red")
     text_rect = text_display.get_rect(center=(500/2, 40))
     player_rect = player.image.get_rect(center=(player.x, player.y))
     
