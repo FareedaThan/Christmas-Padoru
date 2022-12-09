@@ -3,15 +3,18 @@ import random
 import colorsys
 import numpy as np
 from Player import Player
-
+import os
+os.chdir(r"xmas")
 # display set up
 pygame.init()
+font = pygame.font.Font("ELEPHNTI.TTF",36)
 screen = pygame.display.set_mode((500, 500))
 clock = pygame.time.Clock()  # create object to help track time
+count=0
 
 # load image
 bg_img = pygame.image.load('tree.png').convert_alpha()
-bg_img = pygame.transform.scale(bg_img, (350, 350))
+bg_img = pygame.transform.scale(bg_img, (370, 370))
 
 star_img = pygame.image.load('star.png').convert_alpha()
 star_img = pygame.transform.scale(star_img, (120, 120))
@@ -42,6 +45,8 @@ ver_direction = 1
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
+text = ["HASHIRE SORI YO", "KAZE NO YOU NI", "TSUKIMIHARA WO","PADORU PADORU"]
+text_speed= 30
 
 # Set color to image
 def set_color(img, color):
@@ -65,19 +70,8 @@ def get_key(event):
 
 
 while True:
-    if player.left:
-        player.x -= move_speed
-        player.image = player.img_left
-    elif player.right:
-        player.x += move_speed
-        player.image = player.img_right
-    elif player.up:
-        player.y -= move_speed
-    elif player.down:
-        player.y += move_speed
-    elif player.isJump:
-        player.jump()
-
+    player.move(move_speed)
+    count= count+1 if count < text_speed*len(text)-1 else 0
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -105,14 +99,21 @@ while True:
             player.stop()
 
     screen.fill(BLACK)
-    screen.blit(bg_img, (75, 75))
+    bg_rect = bg_img.get_rect(center=(500/2, 500/2))
+    screen.blit(bg_img,bg_rect)
 
     r, g, b = colorsys.hsv_to_rgb(0.15, random.uniform(0.99, 1.0), random.uniform(0.9, 1))
     set_color(star_img, pygame.Color(round(r*255), round(g*255), round(b*255)))
     # rect = image.get_rect(center=(x_pos, y_pos))  # suppose to be the position of start point
+    
+    text_display=font.render(text[count//text_speed],True,"red")
+    text_rect = text_display.get_rect(center=(500/2, 40))
+    player_rect = player.image.get_rect(center=(player.x, player.y))
+    
+    screen.blit(text_display,text_rect)
     screen.blit(star_img, (x_pos, y_pos))
     screen.blit(dust_img, (x_dust, y_dust))
-    screen.blit(player.image, (player.x, player.y))
+    screen.blit(player.image, player_rect)
 
     if x_dust >= bound_R or x_dust <= bound_L:
         hor_direction *= -1
@@ -124,3 +125,5 @@ while True:
 
     pygame.display.update()
     clock.tick(40)
+    
+    
