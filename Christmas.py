@@ -5,7 +5,7 @@ import numpy as np
 from Player import Player
 from pygame import mixer
 import os
-os.chdir(r"Christmas-Padoru")
+# os.chdir(r"test")
 # display set up
 pygame.init()
 font = pygame.font.Font("ELEPHNTI.TTF",36)
