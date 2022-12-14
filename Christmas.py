@@ -8,6 +8,7 @@ from pygame import mixer
 import os
 from Song import ThemeSong
 from Bullet import Bullet
+from random import randint
 os.chdir(r"Christmas-Padoru")
 # display set up
 pygame.init()
@@ -80,7 +81,7 @@ def get_key(event):
 bullet_list=[]
 while True:
     player.move(move_speed)
-    boss.move((player.x-boss.x)/(2*abs(player.x-boss.x)))
+    boss.move(randint(-1,3)*(player.x-boss.x)/(abs(player.x-boss.x)))
     MUSIC_END = pygame.USEREVENT+1
     pygame.mixer.music.set_endevent(MUSIC_END)
     for event in pygame.event.get():
@@ -153,7 +154,10 @@ while True:
             bullet_list.remove(bullet)
             boss.damaged()
         else:
-            screen.blit(*bullet.fire())
+            if bullet.time >= 25:
+                bullet_list.remove(bullet)
+            else:
+                screen.blit(*bullet.fire())
 
     if x_dust >= bound_R or x_dust <= bound_L:
         hor_direction *= -1

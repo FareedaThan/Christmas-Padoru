@@ -8,6 +8,7 @@ class Bullet:
         self.speed = 10
         self.direction = 1 if player_direction == "right" else -1
         self.count = 10
+        self.time = 0
         self.type = type
 
     def fire(self):
@@ -21,5 +22,7 @@ class Bullet:
                 self.y -= self.count ** 2 * 0.1 * neg
                 self.count -= 1
                 self.x += 4*self.direction
+            else:
+                self.time += 1
         self.rect = self.image.get_rect(center=(self.x, self.y))
         return self.image,self.rect
