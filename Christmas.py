@@ -1,17 +1,20 @@
 import pygame
 import random
 import colorsys
+import pyautogui
 import numpy as np
-from Player import Player
+from Player import Player, Enemy
 from pygame import mixer
 import os
-# os.chdir(r"test")
+from Song import ThemeSong
+from Bullet import Bullet
+from random import randint
+os.chdir(r"Christmas-Padoru")
 # display set up
 pygame.init()
 font = pygame.font.Font("ELEPHNTI.TTF",36)
 screen = pygame.display.set_mode((500, 500))
 clock = pygame.time.Clock()  # create object to help track time
-count=0
 
 # load image
 bg_img = pygame.image.load('tree.png').convert_alpha()
@@ -24,12 +27,15 @@ dust_img = pygame.image.load('dust.png').convert_alpha()
 dust_img = pygame.transform.scale(dust_img, (30, 30))
 
 # load & play Sound
-mixer.music.load("Padoru_Song.wav")
-mixer.music.set_volume(0)
-mixer.music.play(-1)
-i=0
+# mixer.music.load("Padoru_Song.wav")
+# mixer.music.set_volume(0)
+# mixer.music.play(-1)
+themesong = ThemeSong()
+lyrics = themesong.play()
+fire = False
 # player object
 player = Player()
+boss = Enemy()
 
 # constant
 x_pos = 200
@@ -51,8 +57,6 @@ ver_direction = 1
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
-text = ["HASHIRE SORI YO", "KAZE NO YOU NI", "TSUKIMIHARA WO","PADORU PADORU"]
-text_speed= 180
 
 # Set color to image
 def set_color(img, color):
@@ -74,14 +78,18 @@ def get_key(event):
     elif event.key == pygame.K_DOWN:
         return "down"
 
-
+bullet_list=[]
 while True:
     player.move(move_speed)
-    count= count+1 if count < 380 else 0
+    boss.move(randint(-1,3)*(player.x-boss.x)/(abs(player.x-boss.x)))
+    MUSIC_END = pygame.USEREVENT+1
+    pygame.mixer.music.set_endevent(MUSIC_END)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+        if event.type == MUSIC_END:
+            lyrics = themesong.play()
         if event.type == pygame.KEYDOWN:
             if get_key(event) == "left":
                 player.left = 1
@@ -109,7 +117,23 @@ while True:
             elif event.key == pygame.K_d:
                 # mute sound
                 mixer.music.set_volume(0)
-
+            elif event.key == pygame.K_c:
+                # fire
+                bullet_list.append(Bullet(player.x,player.y,player.direction,"fire"))
+                fire_sound = mixer.Sound("shoot.wav")
+                fire_sound.set_volume(.2)
+                mixer.Sound.play(fire_sound)
+            elif event.key == pygame.K_x:
+                # bomb
+                bullet_list.append(Bullet(player.x,player.y,player.direction,"throw"))
+                fire_sound = mixer.Sound("shoot.wav")
+                fire_sound.set_volume(.2)
+                mixer.Sound.play(fire_sound)
+            elif event.key == pygame.K_q:
+                # bomb
+                player.restart()
+                boss.restart()
+                
         elif event.type == pygame.KEYUP:
             player.stop()
 
@@ -121,16 +145,28 @@ while True:
     set_color(star_img, pygame.Color(round(r*255), round(g*255), round(b*255)))
     # rect = image.get_rect(center=(x_pos, y_pos))  # suppose to be the position of start point
     
-    if count in [95,180,275,380]:
-        i+=1 
-    text_display=font.render(text[i%4],True,"red")
+    text_display=font.render(lyrics,True,"red")
     text_rect = text_display.get_rect(center=(500/2, 40))
     player_rect = player.image.get_rect(center=(player.x, player.y))
+    boss_rect = boss.image.get_rect(center=(boss.x, boss.y))
     
     screen.blit(text_display,text_rect)
     screen.blit(star_img, (x_pos, y_pos))
     screen.blit(dust_img, (x_dust, y_dust))
     screen.blit(player.image, player_rect)
+    screen.blit(boss.image, boss_rect)
+    for bullet in bullet_list:
+        if abs(bullet.x-boss.x) <= 50:
+            fire_sound = mixer.Sound("hit.wav")
+            fire_sound.set_volume(.5)
+            mixer.Sound.play(fire_sound)
+            bullet_list.remove(bullet)
+            boss.damaged()
+        else:
+            if bullet.time >= 25:
+                bullet_list.remove(bullet)
+            else:
+                screen.blit(*bullet.fire())
 
     if x_dust >= bound_R or x_dust <= bound_L:
         hor_direction *= -1
@@ -140,6 +176,10 @@ while True:
     x_dust += hor_speed * hor_direction
     y_dust += ver_speed * ver_direction
 
+    if abs(player.x-boss.x) <= 50 and boss.status == "a":
+        pyautogui.alert("padoru padoru")
+        player.restart()
+        boss.restart()
     pygame.display.update()
     clock.tick(40)
     
