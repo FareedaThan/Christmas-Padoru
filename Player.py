@@ -90,25 +90,33 @@ class Enemy:
         self.image = pygame.transform.scale(self.image, (100,140))
         self.img_right = self.image
         self.img_left = pygame.transform.flip(self.image, True, False)
+        self.imageD = pygame.image.load('stella.png').convert_alpha()
+        self.imageD = pygame.transform.scale(self.imageD, (140,140))
         self.hp= 5
         self.status= "a"
+        self.dpx,self.dpy = 0,0
+        self.fd = 1
         
     def move(self,move_speed):
         if self.status=="a":
             self.x += move_speed
+        elif self.status=="d":
+            bl,br=self.dpx-20,self.dpx+20
+            self.y -= 1
+            if self.x>=br or self.x<=bl:
+                self.fd *= -1
+            self.x += 2*self.fd
             
     def restart(self):
         self.x = 250
         self.y = 400
-        self.image = pygame.image.load('Boss.png').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (100,140))
-        self.img_right = self.image
-        self.img_left = pygame.transform.flip(self.image, True, False)
         self.hp= 5
         self.status= "a"
     
     def damaged(self):
             self.hp -= 1
             if self.hp == 0:
-                self.x = 10000
+                self.image = self.imageD
                 self.status= "d"
+                self.dpx,self.dpy = self.x,self.y
+                self.hp -= 1

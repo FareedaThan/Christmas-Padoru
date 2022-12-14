@@ -143,7 +143,7 @@ while True:
     screen.blit(player.image, player_rect)
     screen.blit(boss.image, boss_rect)
     for bullet in bullet_list:
-        if abs(bullet.x-boss.x) <= 50:
+        if abs(bullet.x-boss.x) <= 50 and boss.status == "a":
             bullet_list.remove(bullet)
             boss.damaged()
         else:
