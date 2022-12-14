@@ -120,9 +120,15 @@ while True:
             elif event.key == pygame.K_c:
                 # fire
                 bullet_list.append(Bullet(player.x,player.y,player.direction,"fire"))
+                fire_sound = mixer.Sound("shoot.wav")
+                fire_sound.set_volume(.2)
+                mixer.Sound.play(fire_sound)
             elif event.key == pygame.K_x:
                 # bomb
                 bullet_list.append(Bullet(player.x,player.y,player.direction,"throw"))
+                fire_sound = mixer.Sound("shoot.wav")
+                fire_sound.set_volume(.2)
+                mixer.Sound.play(fire_sound)
             elif event.key == pygame.K_q:
                 # bomb
                 player.restart()
@@ -151,6 +157,9 @@ while True:
     screen.blit(boss.image, boss_rect)
     for bullet in bullet_list:
         if abs(bullet.x-boss.x) <= 50:
+            fire_sound = mixer.Sound("hit.wav")
+            fire_sound.set_volume(.5)
+            mixer.Sound.play(fire_sound)
             bullet_list.remove(bullet)
             boss.damaged()
         else:
