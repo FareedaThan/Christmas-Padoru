@@ -84,7 +84,7 @@ class Player:
 
 class Enemy:
     def __init__(self):
-        self.x = 250
+        self.x = 400
         self.y = 400
         self.image = pygame.image.load('Boss.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (100,140))
@@ -108,10 +108,12 @@ class Enemy:
             self.x += 2*self.fd
             
     def restart(self):
-        self.x = 250
+        self.x = 400
         self.y = 400
         self.hp= 5
         self.status= "a"
+        self.image = pygame.image.load('Boss.png').convert_alpha()
+        self.image = pygame.transform.scale(self.image, (100,140))
     
     def damaged(self):
             self.hp -= 1

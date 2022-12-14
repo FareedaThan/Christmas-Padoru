@@ -117,10 +117,16 @@ while True:
                 # mute sound
                 mixer.music.set_volume(0)
             elif event.key == pygame.K_c:
-                # mute sound
-                bullet_list.append(Bullet(player.x,player.y,player.direction))
-                fire = True
-
+                # fire
+                bullet_list.append(Bullet(player.x,player.y,player.direction,"fire"))
+            elif event.key == pygame.K_x:
+                # bomb
+                bullet_list.append(Bullet(player.x,player.y,player.direction,"throw"))
+            elif event.key == pygame.K_q:
+                # bomb
+                player.restart()
+                boss.restart()
+                
         elif event.type == pygame.KEYUP:
             player.stop()
 
@@ -143,7 +149,7 @@ while True:
     screen.blit(player.image, player_rect)
     screen.blit(boss.image, boss_rect)
     for bullet in bullet_list:
-        if abs(bullet.x-boss.x) <= 50 and boss.status == "a":
+        if abs(bullet.x-boss.x) <= 50:
             bullet_list.remove(bullet)
             boss.damaged()
         else:
@@ -157,7 +163,7 @@ while True:
     x_dust += hor_speed * hor_direction
     y_dust += ver_speed * ver_direction
 
-    if abs(player.x-boss.x) <= 50:
+    if abs(player.x-boss.x) <= 50 and boss.status == "a":
         pyautogui.alert("padoru padoru")
         player.restart()
         boss.restart()
