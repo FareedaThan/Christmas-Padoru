@@ -35,6 +35,7 @@ class Player:
             self.y += move_speed
         elif self.isJump:
             self.jump()
+        self.x = self.x % 500
 
     def stop(self):
         # called when you key up and stops the self
@@ -67,5 +68,47 @@ class Player:
             else:
                 self.isJump = False
                 self.jumpCount = self.max_jump
-                self.bonce=self.max_bonce
+                self.bonce=self.max_bonce 
+    def restart(self):
+        self.x = 100
+        self.y = 400
+        self.pos = self.x, self.y
+        self.left = 0
+        self.right = 0
+        self.up = 0
+        self.down = 0
+        self.direction = "right"
+        self.isJump = False
+        self.jumpCount = self.max_jump
+        self.bonce = self.max_bonce
 
+class Enemy:
+    def __init__(self):
+        self.x = 250
+        self.y = 400
+        self.image = pygame.image.load('Boss.png').convert_alpha()
+        self.image = pygame.transform.scale(self.image, (100,140))
+        self.img_right = self.image
+        self.img_left = pygame.transform.flip(self.image, True, False)
+        self.hp= 5
+        self.status= "a"
+        
+    def move(self,move_speed):
+        if self.status=="a":
+            self.x += move_speed
+            
+    def restart(self):
+        self.x = 250
+        self.y = 400
+        self.image = pygame.image.load('Boss.png').convert_alpha()
+        self.image = pygame.transform.scale(self.image, (100,140))
+        self.img_right = self.image
+        self.img_left = pygame.transform.flip(self.image, True, False)
+        self.hp= 5
+        self.status= "a"
+    
+    def damaged(self):
+            self.hp -= 1
+            if self.hp == 0:
+                self.x = 10000
+                self.status= "d"
